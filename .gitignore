@@ -1,2 +1,5 @@
 Lib/site-packages/
 Scripts/
+localenv/
+*/__pycache__/*
+matchdata/

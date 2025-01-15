@@ -1,0 +1,74 @@
+Timer unit: 1e-06 s
+
+Total time: 138.109 s
+File: /home/joey/chess/ChessTournament/src/realbot.py
+Function: minimax at line 46
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    46                                           
+    47                                           
+    48    240526   33655542.6    139.9     24.4      def minimax(self, fen, depth, alpha, beta):
+    49                                                   # If we have reached the maximum search depth or game is over, switch to quiescence search
+    50    240526    1393738.9      5.8      1.0          if depth == 0:
+    51    196115      61602.7      0.3      0.0              if fen in self.board_cache:
+    52    138609   22260896.9    160.6     16.1                  board = self.board_cache[fen]
+    53                                                       else:
+    54     57505    9136691.1    158.9      6.6                  board = chess.Board(fen)
+    55                                                           self.board_cache[fen] = board
+    56     44411      41205.5      0.9      0.0              if board.turn == chess.WHITE:
+    57      5959       2731.4      0.5      0.0                  return self.evaluate(board), None
+    58                                                       else:
+    59     38452    5148544.5    133.9      3.7                  return -self.evaluate(board), None
+    60     38452      19590.0      0.5      0.0          
+    61                                                   if fen in self.legals:
+    62     44411     451353.2     10.2      0.3              moves = self.legals[fen]
+    63     44411     209612.5      4.7      0.2          else:
+    64     44411      11580.6      0.3      0.0              moves = list(move.uci() for move in board.legal_moves)
+    65     44411      28070.8      0.6      0.0              self.legals[fen] = moves
+    66                                                       
+    67                                                   prev_evals = {move : self.eval_table.get((fen, move), (0, 0)) for move in moves}
+    68    247215      56670.4      0.2      0.0          moves.sort(key = lambda x: prev_evals[x], reverse = True)
+    69    244044    1062345.8      4.4      0.8          best_move = moves[0]
+    70    244044      77247.7      0.3      0.1          best_score = float("-inf")
+    71    244044      57208.1      0.2      0.0         
+    72      3585        638.3      0.2      0.0          # Iterate over possible moves
+    73                                                   for uci in moves:
+    74    240459     148963.8      0.6      0.1              move = chess.Move.from_uci(uci)
+    75      6134       2930.9      0.5      0.0              lookup, ldepth = prev_evals[uci]
+    76                                                       if ldepth >= depth:
+    77    234325   33657197.5    143.6     24.4                  score = lookup
+    78    234325    4491289.1     19.2      3.3              else:
+    79    234325   25234390.3    107.7     18.3                  if (fen, uci) in self.next_move_table:
+    80    234325     123372.2      0.5      0.1                      new_fen = self.next_move_table[(fen, uci)]
+    81    240459     329847.6      1.4      0.2                  else:
+    82    240456      61482.5      0.3      0.0                      board = chess.Board(fen)
+    83    240456     143712.7      0.6      0.1                      board.push(move)
+    84                                                               new_fen = board.fen() 
+    85    244041      70310.3      0.3      0.1                      self.next_move_table[(fen, uci)] = new_fen  
+    86     72793      15761.4      0.2      0.0                      if board.is_game_over():
+    87     72793      17020.3      0.2      0.0                          if board.turn == chess.WHITE:
+    88                                                                       score = self.evaluate(board)
+    89                                                                   else:
+    90                                                                       score = -self.evaluate(board)
+    91    244041      48973.5      0.2      0.0                      else:
+    92     55896       9101.5      0.2      0.0                          score, _ = self.minimax(new_fen, depth - 1, -beta, -alpha)
+    93    244041      57540.9      0.2      0.0                  score = -score
+    94                                                           self.eval_table[(fen, uci)] = (score, depth)
+    95     41237      11218.7      0.3      0.0                 
+    96                                                       if score > best_score:
+    97                                                           best_score = score
+    98     44408      10364.8      0.2      0.0                  best_move = move
+    99                                           
+   100                                           
+   101                                                       # Alpha-beta updates
+   102                                                       if best_score > alpha:
+   103                                                           alpha = best_score
+   104                                                       if alpha >= beta:
+   105                                                           # Beta cutoff
+   106                                                           break
+   107                                           
+   108                                           
+   109                                                   return best_score, best_move
+
+138.11 seconds - /home/joey/chess/ChessTournament/src/realbot.py:46 - minimax

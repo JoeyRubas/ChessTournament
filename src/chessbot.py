@@ -1,9 +1,8 @@
 import chess
 
 class ChessBotAbstract():
-    def __init__(self, board, color):
-        self.board = board
-        self.color = color
+    def __init__(self, name):
+        self.name = name
 
     def move(self):
         raise NotImplementedError("Subclass must implement abstract method")
@@ -15,3 +14,6 @@ class ChessBotAbstract():
             
     def evaluate(self):
         raise NotImplementedError("Subclass must implement abstract method")
+    
+    def __str__(self):
+        return self.name
